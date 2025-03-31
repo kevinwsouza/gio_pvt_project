@@ -4,7 +4,8 @@ class Vehicle {
   final String address;
   final String lastCommunication;
   final int odometer; // Hodômetro
-  final double averageSpeed; // Velocidade média
+  final int horimeter; // Horímetro
+  final int rpm; // RPM
 
   Vehicle({
     required this.title,
@@ -12,6 +13,7 @@ class Vehicle {
     required this.address,
     required this.lastCommunication,
     required this.odometer,
-    required this.averageSpeed,
+    required this.horimeter,
+    required this.rpm,
   });
 }

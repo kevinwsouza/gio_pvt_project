@@ -1,6 +1,5 @@
 import 'package:frotalog_gestor_v2/app/shared/mocks/vehicle_model.dart';
 
-
 class VehicleService {
   // Simula a chamada da API para obter os veículos
   Future<List<Vehicle>> fetchVehicles() async {
@@ -15,7 +14,8 @@ class VehicleService {
         address: 'Rua João Moreira Maciel, Bairro Humaitá, Porto Alegre - RS',
         lastCommunication: 'há 1 min',
         odometer: 123456, // Hodômetro em km
-        averageSpeed: 60.5, // Velocidade média em km/h
+        horimeter: 8940, // Horímetro em horas
+        rpm: 3000, // RPM
       ),
       Vehicle(
         title: 'ABC123 / XYZ987',
@@ -23,7 +23,8 @@ class VehicleService {
         address: 'Rua das Flores, Bairro Centro, São Paulo - SP',
         lastCommunication: 'há 5 min',
         odometer: 98765,
-        averageSpeed: 0.0,
+        horimeter: 4500,
+        rpm: 0,
       ),
       Vehicle(
         title: 'DEF456 / LMN654',
@@ -31,7 +32,8 @@ class VehicleService {
         address: 'Av. Brasil, Bairro Industrial, Curitiba - PR',
         lastCommunication: 'há 10 min',
         odometer: 45678,
-        averageSpeed: 0.0,
+        horimeter: 3200,
+        rpm: 0,
       ),
       Vehicle(
         title: 'GHI789 / OPQ321',
@@ -39,7 +41,8 @@ class VehicleService {
         address: 'Rua XV de Novembro, Bairro Centro, Florianópolis - SC',
         lastCommunication: 'há 2 min',
         odometer: 234567,
-        averageSpeed: 75.0,
+        horimeter: 12000,
+        rpm: 2500,
       ),
       Vehicle(
         title: 'JKL012 / RST890',
@@ -47,7 +50,8 @@ class VehicleService {
         address: 'Rua das Palmeiras, Bairro Jardim, Belo Horizonte - MG',
         lastCommunication: 'há 20 min',
         odometer: 34567,
-        averageSpeed: 0.0,
+        horimeter: 1500,
+        rpm: 0,
       ),
       Vehicle(
         title: 'MNO345 / UVW678',
@@ -55,7 +59,8 @@ class VehicleService {
         address: 'Av. Paulista, Bairro Bela Vista, São Paulo - SP',
         lastCommunication: 'há 3 min',
         odometer: 56789,
-        averageSpeed: 48.5,
+        horimeter: 6000,
+        rpm: 2000,
       ),
     ];
   }

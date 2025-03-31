@@ -4,6 +4,7 @@ import 'package:frotalog_gestor_v2/app/shared/mocks/vehicle_model.dart';
 import '../../../../shared/components/custom_app_bar.dart';
 import '../../../../shared/components/frota_card.dart';
 import '../../../../shared/mocks/vehicle_service.dart';
+import '../../../detail screen/presenter/pages/details_screen_page.dart';
 
 class HomeScreenPage extends StatefulWidget {
   const HomeScreenPage({super.key});
@@ -14,7 +15,8 @@ class HomeScreenPage extends StatefulWidget {
 
 class _HomeScreenPageState extends State<HomeScreenPage> {
   final TextEditingController _searchController = TextEditingController();
-  final VehicleService _vehicleService = VehicleService(); // Instância do serviço
+  final VehicleService _vehicleService =
+      VehicleService(); // Instância do serviço
   List<Vehicle> _filteredItems = []; // Lista filtrada
   List<Vehicle> _allItems = []; // Lista completa
   int _currentIndex = 0; // Índice da aba selecionada
@@ -36,10 +38,12 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
   void _filterItems(String query) {
     setState(() {
       if (query.isEmpty) {
-        _filteredItems = _allItems; // Mostra todos os itens se a busca estiver vazia
+        _filteredItems =
+            _allItems; // Mostra todos os itens se a busca estiver vazia
       } else {
         _filteredItems = _allItems
-            .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
+            .where((item) =>
+                item.title.toLowerCase().contains(query.toLowerCase()))
             .toList(); // Filtra os itens que contêm o texto digitado
       }
     });
@@ -77,14 +81,18 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
               onChanged: _filterItems, // Chama o filtro ao digitar
               decoration: InputDecoration(
                 hintText: 'Pesquisar veículo por placa',
-                suffixIcon: const Icon(Icons.search, color: Colors.blue), // Ícone azul no final
+                suffixIcon: const Icon(Icons.search,
+                    color: Colors.blue), // Ícone azul no final
                 filled: true, // Preenche o fundo do campo
-                fillColor: const Color(0xFFEEEEEE), // Cinza um pouco mais escuro para o fundo
+                fillColor: const Color(
+                    0xFFEEEEEE), // Cinza um pouco mais escuro para o fundo
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
                   borderSide: BorderSide.none, // Remove a borda
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0), // Ajusta o espaçamento interno
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 16.0), // Ajusta o espaçamento interno
               ),
             ),
             const SizedBox(height: 16),
@@ -101,12 +109,23 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
                       itemCount: _filteredItems.length,
                       itemBuilder: (context, index) {
                         final vehicle = _filteredItems[index];
-                        return FrotaCard(
-                          title: vehicle.title,
-                          status: vehicle.status,
-                          address: vehicle.address,
-                          lastCommunication: vehicle.lastCommunication,
-                          icon: Icons.local_shipping,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DetailsScreenPage(vehicle: vehicle),
+                              ),
+                            );
+                          },
+                          child: FrotaCard(
+                            title: vehicle.title,
+                            status: vehicle.status,
+                            address: vehicle.address,
+                            lastCommunication: vehicle.lastCommunication,
+                            icon: Icons.local_shipping,
+                          ),
                         );
                       },
                     ),
@@ -115,19 +134,29 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 30.0, left: 16.0, right: 16.0), // Espaçamento para "flutuar"
+        padding: const EdgeInsets.only(
+            bottom: 30.0,
+            left: 16.0,
+            right: 16.0), // Espaçamento para "flutuar"
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12.0), // Bordas arredondadas
           child: Container(
             color: const Color(0xFFEEEEEE), // Mesma cor do campo de busca
-            padding: const EdgeInsets.only(top: 20.0, bottom: 0.0), // Ajusta o espaço interno acima e abaixo dos ícones
+            padding: const EdgeInsets.only(
+                top: 20.0,
+                bottom:
+                    0.0), // Ajusta o espaço interno acima e abaixo dos ícones
             child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed, // Centraliza os ícones e textos
+              type: BottomNavigationBarType
+                  .fixed, // Centraliza os ícones e textos
               currentIndex: _currentIndex, // Define o índice selecionado
               onTap: _onTabTapped, // Chama a função ao tocar em uma aba
-              selectedItemColor: Colors.blue, // Cor do texto e ícone selecionados
-              unselectedItemColor: Colors.black, // Cor do texto e ícone não selecionados
-              backgroundColor: Colors.transparent, // Fundo transparente para o Container controlar a cor
+              selectedItemColor:
+                  Colors.blue, // Cor do texto e ícone selecionados
+              unselectedItemColor:
+                  Colors.black, // Cor do texto e ícone não selecionados
+              backgroundColor: Colors
+                  .transparent, // Fundo transparente para o Container controlar a cor
               elevation: 0, // Remove a sombra padrão
               items: const [
                 BottomNavigationBarItem(
