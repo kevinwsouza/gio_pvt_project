@@ -5,8 +5,12 @@ import 'package:frotalog_gestor_v2/app/features/Login/presenter/pages/login_page
 import 'package:frotalog_gestor_v2/splash_screen.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/detail screen/presenter/bloc/details_screen_controller.dart';
+import '../../features/detail screen/presenter/bloc/details_screen_state.dart';
+import '../../features/detail screen/presenter/pages/details_screen_page.dart';
 import '../../features/home screen/presenter/bloc/home_screen_controller.dart';
 import '../../features/home screen/presenter/pages/home_screen_page.dart';
+import '../mocks/vehicle_model.dart';
 
 final routes = GoRouter(routes: [
   GoRoute(
@@ -35,5 +39,17 @@ final routes = GoRouter(routes: [
           child: const HomeScreenPage(),
           )
       )
-  )
+  ),
+  GoRoute(
+  path: '/details',
+  pageBuilder: (context, state) {
+    final vehicle = state.extra as Vehicle;
+    return MaterialPage(
+      child: BlocProvider(
+        create: (_) => DetailsScreenController(DetailsScreenInitialState()),
+        child: DetailsScreenPage(vehicle: vehicle),
+      ),
+    );
+  },
+),
 ]);

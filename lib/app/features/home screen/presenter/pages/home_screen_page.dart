@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frotalog_gestor_v2/app/shared/components/custom_app_bar.dart';
 import 'package:frotalog_gestor_v2/app/shared/mocks/vehicle_model.dart';
 
 import '../../../../shared/components/frota_card.dart';
 import '../../../../shared/mocks/vehicle_service.dart';
+import '../../../detail screen/presenter/bloc/details_screen_controller.dart';
+import '../../../detail screen/presenter/bloc/details_screen_state.dart';
 import '../../../detail screen/presenter/pages/details_screen_page.dart';
 
 class HomeScreenPage extends StatefulWidget {
@@ -15,7 +18,8 @@ class HomeScreenPage extends StatefulWidget {
 
 class _HomeScreenPageState extends State<HomeScreenPage> {
   final TextEditingController _searchController = TextEditingController();
-  final VehicleService _vehicleService = VehicleService(); // Instância do serviço
+  final VehicleService _vehicleService =
+      VehicleService(); // Instância do serviço
   List<Vehicle> _filteredItems = []; // Lista filtrada
   List<Vehicle> _allItems = []; // Lista completa
   int _currentIndex = 0; // Índice da aba selecionada
@@ -37,10 +41,12 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
   void _filterItems(String query) {
     setState(() {
       if (query.isEmpty) {
-        _filteredItems = _allItems; // Mostra todos os itens se a busca estiver vazia
+        _filteredItems =
+            _allItems; // Mostra todos os itens se a busca estiver vazia
       } else {
         _filteredItems = _allItems
-            .where((item) => item.title.toLowerCase().contains(query.toLowerCase()))
+            .where((item) =>
+                item.title.toLowerCase().contains(query.toLowerCase()))
             .toList(); // Filtra os itens que contêm o texto digitado
       }
     });
@@ -65,31 +71,57 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(
-          bottom: 30.0,
+          bottom: 40.0,
           left: 16.0,
           right: 16.0,
-        ), // Espaçamento para "flutuar"
+        ), // Espaçamento externo para "flutuar"
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12.0), // Bordas arredondadas
           child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed, // Centraliza os ícones e textos
+            type:
+                BottomNavigationBarType.fixed, // Centraliza os ícones e textos
             currentIndex: _currentIndex, // Define o índice selecionado
             onTap: _onTabTapped, // Chama a função ao tocar em uma aba
             selectedItemColor: Colors.blue, // Cor do texto e ícone selecionados
-            unselectedItemColor: Colors.black, // Cor do texto e ícone não selecionados
-            backgroundColor: const Color(0xFFEEEEEE), // Mesma cor do campo de busca
+            unselectedItemColor:
+                Colors.black, // Cor do texto e ícone não selecionados
+            backgroundColor:
+                const Color(0xFFEEEEEE), // Mesma cor do campo de busca
             elevation: 0, // Remove a sombra padrão
+            showSelectedLabels: true, // Mostra os rótulos selecionados
+            showUnselectedLabels: true, // Mostra os rótulos não selecionados
+            selectedLabelStyle: const TextStyle(
+              fontSize: 12.0, // Tamanho do texto selecionado
+              fontWeight: FontWeight.bold,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontSize: 12.0, // Tamanho do texto não selecionado
+            ),
             items: const [
               BottomNavigationBarItem(
-                icon: Icon(Icons.directions_car),
+                icon: Padding(
+                  padding: EdgeInsets.only(
+                      top: 20.0), // Ajusta o ícone verticalmente
+                  child: Icon(Icons.directions_car,
+                      size: 24.0), // Ícone centralizado
+                ),
                 label: 'Frota',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.map),
+                icon: Padding(
+                  padding: EdgeInsets.only(
+                      top: 20.0), // Ajusta o ícone verticalmente
+                  child: Icon(Icons.map, size: 24.0), // Ícone centralizado
+                ),
                 label: 'Mapa',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings_remote),
+                icon: Padding(
+                  padding: EdgeInsets.only(
+                      top: 20.0), // Ajusta o ícone verticalmente
+                  child: Icon(Icons.settings_remote,
+                      size: 24.0), // Ícone centralizado
+                ),
                 label: 'Remoto',
               ),
             ],
@@ -100,20 +132,23 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
   }
 
   Widget _buildFleetNavigator() {
-    return Navigator(
-      onGenerateRoute: (settings) {
-        if (settings.name == '/details') {
-          final vehicle = settings.arguments as Vehicle;
-          return MaterialPageRoute(
-            builder: (context) => DetailsScreenPage(vehicle: vehicle),
-          );
-        }
+  return Navigator(
+    onGenerateRoute: (settings) {
+      if (settings.name == '/details') {
+        final vehicle = settings.arguments as Vehicle;
         return MaterialPageRoute(
-          builder: (context) => _buildFleetScreen(),
+          builder: (context) => BlocProvider(
+            create: (_) => DetailsScreenController(DetailsScreenInitialState()),
+            child: DetailsScreenPage(vehicle: vehicle),
+          ),
         );
-      },
-    );
-  }
+      }
+      return MaterialPageRoute(
+        builder: (context) => _buildFleetScreen(),
+      );
+    },
+  );
+}
 
   Widget _buildFleetScreen() {
     return Scaffold(
@@ -131,15 +166,18 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
               onChanged: _filterItems, // Chama o filtro ao digitar
               decoration: InputDecoration(
                 hintText: 'Pesquisar veículo por placa',
-                suffixIcon: const Icon(Icons.search, color: Colors.blue), // Ícone azul no final
+                suffixIcon: const Icon(Icons.search,
+                    color: Colors.blue), // Ícone azul no final
                 filled: true, // Preenche o fundo do campo
-                fillColor: const Color(0xFFEEEEEE), // Cinza um pouco mais escuro para o fundo
+                fillColor: const Color(
+                    0xFFEEEEEE), // Cinza um pouco mais escuro para o fundo
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
                   borderSide: BorderSide.none, // Remove a borda
                 ),
                 contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12.0, horizontal: 16.0), // Ajusta o espaçamento interno
+                    vertical: 12.0,
+                    horizontal: 16.0), // Ajusta o espaçamento interno
               ),
             ),
             const SizedBox(height: 16),
