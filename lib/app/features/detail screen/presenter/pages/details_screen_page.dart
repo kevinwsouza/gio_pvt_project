@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../shared/components/custom_app_bar.dart';
+import '../../../../shared/components/frota_config_card.dart';
 import '../../../../shared/components/frota_details_card.dart';
 import '../../../../shared/mocks/vehicle_model.dart';
 
@@ -76,7 +77,12 @@ class DetailsScreenPage extends StatelessWidget {
               children: [
                 OutlinedButton(
                   onPressed: () {
-                    // Ação para configurações
+                    // Exibe a modal de configurações
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false, // Desabilita cliques fora da modal
+                      builder: (context) => const FrotaConfigCard(),
+                    );
                   },
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
