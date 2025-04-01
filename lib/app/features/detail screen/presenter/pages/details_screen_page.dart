@@ -118,37 +118,6 @@ class DetailsScreenPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(
-          bottom: 30.0,
-          left: 16.0,
-          right: 16.0,
-        ), // Espaçamento para "flutuar"
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12.0), // Bordas arredondadas
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed, // Centraliza os ícones e textos
-            selectedItemColor: Colors.blue, // Cor do texto e ícone selecionados
-            unselectedItemColor: Colors.black, // Cor do texto e ícone não selecionados
-            backgroundColor: const Color(0xFFEEEEEE), // Mesma cor do campo de busca
-            elevation: 0, // Remove a sombra padrão
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.directions_car),
-                label: 'Frota',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.map),
-                label: 'Mapa',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings_remote),
-                label: 'Remoto',
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

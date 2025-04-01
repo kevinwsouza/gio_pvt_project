@@ -68,12 +68,12 @@ class FrotaCardDetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  addressParts[0], // Primeira parte do endereço
+                  addressParts[0].trim(), // Primeira parte do endereço
                   style: const TextStyle(fontSize: 14.0, color: Colors.black),
                 ),
                 if (addressParts.length > 1)
                   Text(
-                    addressParts.sublist(1).join(','), // Resto do endereço
+                    addressParts.sublist(1).join(',').trim(), // Resto do endereço
                     style: const TextStyle(fontSize: 14.0, color: Colors.black),
                   ),
               ],
