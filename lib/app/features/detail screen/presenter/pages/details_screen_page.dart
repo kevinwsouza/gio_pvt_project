@@ -14,39 +14,8 @@ class DetailsScreenPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<DetailsScreenController, DetailsScreenState>(
-      listener: (context, state) {
-        if (state is DetailsScreenLoading) {
-          // Exibe um indicador de carregamento
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator(),
-                  if (state.message != null) ...[
-                    const SizedBox(height: 16.0),
-                    Text(state.message!),
-                  ],
-                ],
-              ),
-            ),
-          );
-        } else if (state is DetailsScreenSuccessState) {
-          Navigator.of(context).pop(); // Fecha o indicador de carregamento
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        } else if (state is DetailsScreenErrorState) {
-          Navigator.of(context).pop(); // Fecha o indicador de carregamento
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-      },
-      child: Scaffold(
+    return BlocBuilder<DetailsScreenController, DetailsScreenState>(builder: (context, state) {
+      return Scaffold(
         appBar: const CustomAppBar(
           showBackButton: true, // Mostra o botão de voltar
           showLogoutButton: true, // Mostra o botão de logout
@@ -170,7 +139,7 @@ class DetailsScreenPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
