@@ -11,6 +11,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final test = 'test';
   @override
   void initState() {
     super.initState();
@@ -28,11 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
             alignment: Alignment.topCenter,
             child: Padding(
               padding: const EdgeInsets.only(top: 250.0),
-              child: SizedBox(
-                width: 200, 
-                height: 100,
-                child: Image.asset('assets/frotalog_logo_1.png')
-              ),
+              child: SizedBox(width: 200, height: 100, child: Image.asset('assets/frotalog_logo_1.png')),
             ),
           ),
           Center(
@@ -42,12 +39,11 @@ class _SplashScreenState extends State<SplashScreen> {
                 const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                   strokeWidth: 1,
-                ), 
+                ),
                 const SizedBox(height: 16),
                 const Text(
                   'Carregando',
-                  style: TextStyle(fontSize: 14,
-                  color: Colors.grey),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
@@ -56,11 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 100.0),
-              child: SizedBox(
-                width: 150, 
-                height: 50,
-                child: SvgPicture.asset('assets/creare_logo_1.svg')
-              ),
+              child: SizedBox(width: 150, height: 50, child: SvgPicture.asset('assets/creare_logo_1.svg')),
             ),
           ),
         ],
