@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frotalog_gestor_v2/app/features/home%20screen/presenter/bloc/home_screen_controller.dart';
+import 'package:frotalog_gestor_v2/app/features/home%20screen/presenter/bloc/home_screen_state.dart';
 import 'package:frotalog_gestor_v2/app/shared/components/custom_app_bar.dart';
 import 'package:frotalog_gestor_v2/app/shared/mocks/vehicle_model.dart';
 import 'package:frotalog_gestor_v2/app/shared/routes/home_routes.dart';
@@ -56,68 +59,70 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          // Aba "Frota" com navegação interna
-          _currentIndex == 0 ? DetailsScreenPage(vehicle: VehicleModel.initial()) : _buildFleetScreen(),
-          _buildMapScreen(), // Aba "Mapa"
-          _buildRemoteScreen(), // Aba "Remoto"
-        ],
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(
-          bottom: 40.0,
-          left: 16.0,
-          right: 16.0,
-        ), // Espaçamento externo para "flutuar"
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12.0), // Bordas arredondadas
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed, // Centraliza os ícones e textos
-            currentIndex: _currentIndex, // Define o índice selecionado
-            onTap: _onTabTapped, // Chama a função ao tocar em uma aba
-            selectedItemColor: Colors.blue, // Cor do texto e ícone selecionados
-            unselectedItemColor: Colors.black, // Cor do texto e ícone não selecionados
-            backgroundColor: const Color(0xFFEEEEEE), // Mesma cor do campo de busca
-            elevation: 0, // Remove a sombra padrão
-            showSelectedLabels: true, // Mostra os rótulos selecionados
-            showUnselectedLabels: true, // Mostra os rótulos não selecionados
-            selectedLabelStyle: const TextStyle(
-              fontSize: 12.0, // Tamanho do texto selecionado
-              fontWeight: FontWeight.bold,
+    return BlocBuilder<HomeScreenController, HomeScreenState>(builder: (context, state) {
+      return Scaffold(
+        body: IndexedStack(
+          index: _currentIndex,
+          children: [
+            // Aba "Frota" com navegação interna
+            _currentIndex == 0 ? DetailsScreenPage(vehicle: VehicleModel.initial()) : _buildFleetScreen(),
+            _buildMapScreen(), // Aba "Mapa"
+            _buildRemoteScreen(), // Aba "Remoto"
+          ],
+        ),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.only(
+            bottom: 40.0,
+            left: 16.0,
+            right: 16.0,
+          ), // Espaçamento externo para "flutuar"
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12.0), // Bordas arredondadas
+            child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed, // Centraliza os ícones e textos
+              currentIndex: _currentIndex, // Define o índice selecionado
+              onTap: _onTabTapped, // Chama a função ao tocar em uma aba
+              selectedItemColor: Colors.blue, // Cor do texto e ícone selecionados
+              unselectedItemColor: Colors.black, // Cor do texto e ícone não selecionados
+              backgroundColor: const Color(0xFFEEEEEE), // Mesma cor do campo de busca
+              elevation: 0, // Remove a sombra padrão
+              showSelectedLabels: true, // Mostra os rótulos selecionados
+              showUnselectedLabels: true, // Mostra os rótulos não selecionados
+              selectedLabelStyle: const TextStyle(
+                fontSize: 12.0, // Tamanho do texto selecionado
+                fontWeight: FontWeight.bold,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontSize: 12.0, // Tamanho do texto não selecionado
+              ),
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Padding(
+                    padding: EdgeInsets.only(top: 20.0), // Ajusta o ícone verticalmente
+                    child: Icon(Icons.directions_car, size: 24.0), // Ícone centralizado
+                  ),
+                  label: 'Frota',
+                ),
+                BottomNavigationBarItem(
+                  icon: Padding(
+                    padding: EdgeInsets.only(top: 20.0), // Ajusta o ícone verticalmente
+                    child: Icon(Icons.map, size: 24.0), // Ícone centralizado
+                  ),
+                  label: 'Mapa',
+                ),
+                BottomNavigationBarItem(
+                  icon: Padding(
+                    padding: EdgeInsets.only(top: 20.0), // Ajusta o ícone verticalmente
+                    child: Icon(Icons.settings_remote, size: 24.0), // Ícone centralizado
+                  ),
+                  label: 'Remoto',
+                ),
+              ],
             ),
-            unselectedLabelStyle: const TextStyle(
-              fontSize: 12.0, // Tamanho do texto não selecionado
-            ),
-            items: const [
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: EdgeInsets.only(top: 20.0), // Ajusta o ícone verticalmente
-                  child: Icon(Icons.directions_car, size: 24.0), // Ícone centralizado
-                ),
-                label: 'Frota',
-              ),
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: EdgeInsets.only(top: 20.0), // Ajusta o ícone verticalmente
-                  child: Icon(Icons.map, size: 24.0), // Ícone centralizado
-                ),
-                label: 'Mapa',
-              ),
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: EdgeInsets.only(top: 20.0), // Ajusta o ícone verticalmente
-                  child: Icon(Icons.settings_remote, size: 24.0), // Ícone centralizado
-                ),
-                label: 'Remoto',
-              ),
-            ],
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildFleetScreen() {
