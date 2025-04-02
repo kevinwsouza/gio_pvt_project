@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frotalog_gestor_v2/app/shared/components/custom_app_bar.dart';
 import 'package:frotalog_gestor_v2/app/shared/mocks/vehicle_model.dart';
 import 'package:frotalog_gestor_v2/app/shared/routes/home_routes.dart';
 
 import '../../../../shared/components/frota_card.dart';
 import '../../../../shared/mocks/vehicle_service.dart';
-import '../../../detail screen/presenter/bloc/details_screen_controller.dart';
 
 import '../../../detail screen/presenter/pages/details_screen_page.dart';
 
@@ -62,7 +60,8 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          _buildFleetNavigator(), // Aba "Frota" com navegação interna
+          // Aba "Frota" com navegação interna
+          _currentIndex == 0 ? DetailsScreenPage(vehicle: _allItems.first) : _buildFleetScreen(),
           _buildMapScreen(), // Aba "Mapa"
           _buildRemoteScreen(), // Aba "Remoto"
         ],
@@ -118,25 +117,6 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildFleetNavigator() {
-    return Navigator(
-      onGenerateRoute: (settings) {
-        if (settings.name == HomeRoutes.details) {
-          final vehicle = settings.arguments as VehicleModel;
-          return MaterialPageRoute(
-            builder: (context) => BlocProvider(
-              create: (_) => DetailsScreenController(),
-              child: DetailsScreenPage(vehicle: vehicle),
-            ),
-          );
-        }
-        return MaterialPageRoute(
-          builder: (context) => _buildFleetScreen(),
-        );
-      },
     );
   }
 
