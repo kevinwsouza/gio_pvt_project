@@ -1,179 +1,324 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../../../shared/components/custom_app_bar.dart';
 import '../../../../shared/components/frota_config_card.dart';
 import '../../../../shared/components/frota_details_card.dart';
+import '../../../../shared/globals/permission_menager_bluetooth.dart';
 import '../../../../shared/mocks/vehicle_model.dart';
-import '../bloc/details_screen_controller.dart';
-import '../bloc/details_screen_state.dart';
 
-class DetailsScreenPage extends StatelessWidget {
+class DetailsScreenPage extends StatefulWidget {
   final Vehicle vehicle;
 
   const DetailsScreenPage({super.key, required this.vehicle});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocListener<DetailsScreenController, DetailsScreenState>(
-      listener: (context, state) {
-        if (state is DetailsScreenLoading) {
-          // Exibe um indicador de carregamento
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator(),
-                  if (state.message != null) ...[
-                    const SizedBox(height: 16.0),
-                    Text(state.message!),
-                  ],
-                ],
-              ),
-            ),
-          );
-        } else if (state is DetailsScreenSuccessState) {
-          Navigator.of(context).pop(); // Fecha o indicador de carregamento
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        } else if (state is DetailsScreenErrorState) {
-          Navigator.of(context).pop(); // Fecha o indicador de carregamento
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-      },
-      child: Scaffold(
-        appBar: const CustomAppBar(
-          showBackButton: true, // Mostra o botão de voltar
-          showLogoutButton: true, // Mostra o botão de logout
+  State<DetailsScreenPage> createState() => _DetailsScreenPageState();
+}
+
+class _DetailsScreenPageState extends State<DetailsScreenPage> {
+  // MARKER: Variáveis de estado do Bluetooth
+  bool _isScanning = false;
+  StreamSubscription? _scanSubscription;
+  List<BluetoothDevice> _devices = []; // Lista de dispositivos encontrados
+
+  // MARKER: Lógica do Bluetooth
+  Future<void> _startBluetoothPairing(BuildContext context) async {
+  print('Iniciando pareamento Bluetooth...');
+
+  // Solicita permissões usando a classe global
+  bool permissionsGranted = await PermissionManagerBluetooth().requestPermissions();
+
+  if (!permissionsGranted) {
+    if (!mounted) return; // Verifica se o widget ainda está montado
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Permissões necessárias não foram concedidas.')),
+    );
+    return;
+  }
+
+  if (_isScanning) {
+    if (!mounted) return; // Verifica se o widget ainda está montado
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Já está em andamento um escaneamento de dispositivos.')),
+    );
+    return;
+  }
+
+  setState(() {
+    _isScanning = true; // Marca como escaneando
+    _devices.clear(); // Limpa a lista de dispositivos
+  });
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const Center(
+      child: CircularProgressIndicator(),
+    ),
+  );
+
+  try {
+    // Verifica se o Bluetooth está ligado
+    bool isOn = await FlutterBluePlus.adapterState.first == BluetoothAdapterState.on;
+    if (!isOn) {
+      if (!mounted) return; // Verifica se o widget ainda está montado
+      Navigator.of(context).pop(); // Fecha o indicador de carregamento
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bluetooth está desligado. Por favor, ligue o Bluetooth.')),
+      );
+      setState(() {
+        _isScanning = false; // Libera o estado de escaneamento
+      });
+      return;
+    }
+
+    // Inicia o escaneamento de dispositivos
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Escaneando dispositivos...')),
+    );
+    FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
+
+    // Escuta os dispositivos encontrados
+    _scanSubscription = FlutterBluePlus.scanResults.listen((results) {
+      setState(() {
+        _devices = results.map((r) => r.device).toList();
+      });
+    });
+
+    // Para o escaneamento após 5 segundos
+    await Future.delayed(const Duration(seconds: 5));
+    FlutterBluePlus.stopScan();
+
+    if (!mounted) return; // Verifica se o widget ainda está montado
+    Navigator.of(context).pop(); // Fecha o indicador de carregamento
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Escaneamento concluído! Selecione um dispositivo para parear.')),
+    );
+
+    // Exibe a lista de dispositivos encontrados
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0), // Bordas arredondadas
         ),
-        body: Padding(
+        child: Container(
           padding: const EdgeInsets.all(16.0),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(
+              Radius.circular(16.0), // Bordas arredondadas
+            ),
+          ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Aba de informações e localização
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: const [
-                      Text(
-                        'Informações',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      SizedBox(height: 4.0),
-                      Divider(
-                        color: Colors.blue,
-                        thickness: 2.0,
-                        height: 2.0,
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: const [
-                      Text(
-                        'Localização',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              Align(
-                alignment: Alignment.centerRight, // Alinha o card à direita
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: 8.0), // Ajusta o bottom do card
-                  child: FrotaCardDetails(
-                    title: vehicle.title,
-                    status: vehicle.status,
-                    driver: 'Motorista Carlos Saldanha',
-                    address: vehicle.address,
-                    lastCommunication: vehicle.lastCommunication,
-                    odometer: '${vehicle.odometer} km',
-                    horimeter: '${vehicle.horimeter} h',
-                    rpm: '${vehicle.rpm}',
-                  ),
+              const Text(
+                'Dispositivos Encontrados',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 20.0),
-              // Botões
-              Column(
-                children: [
-                  OutlinedButton(
-                    onPressed: () {
-                      // Exibe a modal de configurações
-                      showDialog(
-                        context: context,
-                        barrierDismissible:
-                            false, // Desabilita cliques fora da modal
-                        builder: (dialogContext) => BlocProvider.value(
-                          value: context.read<DetailsScreenController>(),
-                          child: FrotaConfigCard(
-                            onPressed: () {
-                              // Chama o pareamento Bluetooth
-                              dialogContext
-                                  .read<DetailsScreenController>()
-                                  .startBluetoothPairing();
-                            },
+              const SizedBox(height: 16.0),
+              _devices.isEmpty
+                  ? const Text(
+                      'Nenhum dispositivo encontrado.',
+                      style: TextStyle(fontSize: 16.0, color: Colors.black54),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _devices.length,
+                      itemBuilder: (context, index) {
+                        final device = _devices[index];
+                        return ListTile(
+                          title: Text(
+                            device.platformName.isNotEmpty ? device.platformName : 'Dispositivo sem nome',
                           ),
-                        ),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      side: const BorderSide(
-                          color: Colors.blue), // Linha de borda azul
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
+                          subtitle: Text(device.remoteId.toString()),
+                          trailing: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop(); // Fecha a lista
+                              _connectToDevice(device); // Conecta ao dispositivo
+                            },
+                            child: const Text('Conectar'),
+                          ),
+                        );
+                      },
                     ),
-                    child: const Text(
-                      'Configurações',
-                      style: TextStyle(
-                        color: Colors.blue, // Texto azul
-                        fontWeight: FontWeight.bold, // Texto em negrito
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Ação para abrir chamado
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'Abrir chamado',
-                      style: TextStyle(
-                        color: Colors.white, // Texto branco
-                        fontWeight: FontWeight.bold, // Texto em negrito
-                      ),
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop(); // Fecha a lista
+                },
+                child: const Text('Fechar'),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  } catch (e) {
+    if (!mounted) return; // Verifica se o widget ainda está montado
+    Navigator.of(context).pop(); // Fecha o indicador de carregamento
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Erro ao parear: $e')),
+    );
+  } finally {
+    _scanSubscription?.cancel(); // Cancela o listener
+    if (mounted) {
+      setState(() {
+        _isScanning = false; // Libera o estado de escaneamento
+      });
+    }
+  }
+}
+
+  // MARKER: Lógica de Conexão
+  Future<void> _connectToDevice(BluetoothDevice device) async {
+    try {
+      print('Conectando ao dispositivo: ${device.platformName}');
+      await device.connect();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Conectado ao dispositivo: ${device.platformName}')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao conectar: $e')),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _scanSubscription?.cancel(); // Cancela o listener ao destruir o widget
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const CustomAppBar(
+        showBackButton: true, // Mostra o botão de voltar
+        showLogoutButton: true, // Mostra o botão de logout
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Aba de informações e localização
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: const [
+                    Text(
+                      'Informações',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    SizedBox(height: 4.0),
+                    Divider(
+                      color: Colors.blue,
+                      thickness: 2.0,
+                      height: 2.0,
+                    ),
+                  ],
+                ),
+                Column(
+                  children: const [
+                    Text(
+                      'Localização',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16.0),
+            Align(
+              alignment: Alignment.centerRight, // Alinha o card à direita
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8.0), // Ajusta o bottom do card
+                child: FrotaCardDetails(
+                  title: widget.vehicle.title,
+                  status: widget.vehicle.status,
+                  driver: 'Motorista Carlos Saldanha',
+                  address: widget.vehicle.address,
+                  lastCommunication: widget.vehicle.lastCommunication,
+                  odometer: '${widget.vehicle.odometer} km',
+                  horimeter: '${widget.vehicle.horimeter} h',
+                  rpm: '${widget.vehicle.rpm}',
+                ),
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            // Botões
+            Column(
+              children: [
+                OutlinedButton(
+                  onPressed: () {
+                    // Exibe o FrotaConfigCard como um Dialog
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false, // Desabilita cliques fora da modal
+                      builder: (dialogContext) => FrotaConfigCard(
+                        onPressed: () {
+                          // Chama a lógica de pareamento Bluetooth ao clicar no botão dentro do FrotaConfigCard
+                          _startBluetoothPairing(dialogContext);
+                        },
+                      ),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    side: const BorderSide(color: Colors.blue), // Linha de borda azul
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  child: const Text(
+                    'Configurações',
+                    style: TextStyle(
+                      color: Colors.blue, // Texto azul
+                      fontWeight: FontWeight.bold, // Texto em negrito
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10.0),
+                ElevatedButton(
+                  onPressed: () {
+                    // Ação para abrir chamado
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: const Text(
+                    'Abrir chamado',
+                    style: TextStyle(
+                      color: Colors.white, // Texto branco
+                      fontWeight: FontWeight.bold, // Texto em negrito
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

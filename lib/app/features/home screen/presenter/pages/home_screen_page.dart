@@ -71,7 +71,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(
-          bottom: 40.0,
+          bottom: 20.0,
           left: 16.0,
           right: 16.0,
         ), // Espaçamento externo para "flutuar"
@@ -101,7 +101,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
               BottomNavigationBarItem(
                 icon: Padding(
                   padding: EdgeInsets.only(
-                      top: 20.0), // Ajusta o ícone verticalmente
+                      top: 5.0), // Ajusta o ícone verticalmente
                   child: Icon(Icons.directions_car,
                       size: 24.0), // Ícone centralizado
                 ),
@@ -110,7 +110,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
               BottomNavigationBarItem(
                 icon: Padding(
                   padding: EdgeInsets.only(
-                      top: 20.0), // Ajusta o ícone verticalmente
+                      top: 5.0), // Ajusta o ícone verticalmente
                   child: Icon(Icons.map, size: 24.0), // Ícone centralizado
                 ),
                 label: 'Mapa',
@@ -118,7 +118,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
               BottomNavigationBarItem(
                 icon: Padding(
                   padding: EdgeInsets.only(
-                      top: 20.0), // Ajusta o ícone verticalmente
+                      top: 5.0), // Ajusta o ícone verticalmente
                   child: Icon(Icons.settings_remote,
                       size: 24.0), // Ícone centralizado
                 ),
