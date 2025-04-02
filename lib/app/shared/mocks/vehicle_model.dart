@@ -1,4 +1,4 @@
-class Vehicle {
+class VehicleModel {
   final String title;
   final String status;
   final String address;
@@ -7,7 +7,7 @@ class Vehicle {
   final int horimeter; // Horímetro
   final int rpm; // RPM
 
-  Vehicle({
+  VehicleModel({
     required this.title,
     required this.status,
     required this.address,

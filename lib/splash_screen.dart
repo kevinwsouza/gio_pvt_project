@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frotalog_gestor_v2/app/shared/routes/home_routes.dart';
 import 'dart:async';
 import 'package:go_router/go_router.dart';
 
@@ -11,12 +12,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final test = 'test';
   @override
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
-      context.go('/login');
+      context.go(HomeRoutes.login);
     });
   }
 

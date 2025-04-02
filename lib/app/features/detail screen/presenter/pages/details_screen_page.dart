@@ -8,7 +8,7 @@ import '../bloc/details_screen_controller.dart';
 import '../bloc/details_screen_state.dart';
 
 class DetailsScreenPage extends StatelessWidget {
-  final Vehicle vehicle;
+  final VehicleModel vehicle;
 
   const DetailsScreenPage({super.key, required this.vehicle});
 
@@ -96,8 +96,7 @@ class DetailsScreenPage extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight, // Alinha o card à direita
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: 8.0), // Ajusta o bottom do card
+                  padding: const EdgeInsets.only(bottom: 8.0), // Ajusta o bottom do card
                   child: FrotaCardDetails(
                     title: vehicle.title,
                     status: vehicle.status,
@@ -119,16 +118,13 @@ class DetailsScreenPage extends StatelessWidget {
                       // Exibe a modal de configurações
                       showDialog(
                         context: context,
-                        barrierDismissible:
-                            false, // Desabilita cliques fora da modal
+                        barrierDismissible: false, // Desabilita cliques fora da modal
                         builder: (dialogContext) => BlocProvider.value(
                           value: context.read<DetailsScreenController>(),
                           child: FrotaConfigCard(
                             onPressed: () {
                               // Chama o pareamento Bluetooth
-                              dialogContext
-                                  .read<DetailsScreenController>()
-                                  .startBluetoothPairing();
+                              dialogContext.read<DetailsScreenController>().startBluetoothPairing();
                             },
                           ),
                         ),
@@ -136,8 +132,7 @@ class DetailsScreenPage extends StatelessWidget {
                     },
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
-                      side: const BorderSide(
-                          color: Colors.blue), // Linha de borda azul
+                      side: const BorderSide(color: Colors.blue), // Linha de borda azul
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
