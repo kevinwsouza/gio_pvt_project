@@ -99,22 +99,26 @@ class _DetailsScreenPageState extends State<DetailsScreenPage> {
 
     // Exibe a lista de dispositivos encontrados
     showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0), // Bordas arredondadas
+  context: context,
+  barrierDismissible: false,
+  builder: (dialogContext) => Dialog(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16.0), // Bordas arredondadas
+    ),
+    child: Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(
+          Radius.circular(16.0), // Bordas arredondadas
         ),
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(
-              Radius.circular(16.0), // Bordas arredondadas
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Cabeçalho com o botão de fechar
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 'Dispositivos Encontrados',
@@ -123,44 +127,57 @@ class _DetailsScreenPageState extends State<DetailsScreenPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16.0),
-              _devices.isEmpty
-                  ? const Text(
-                      'Nenhum dispositivo encontrado.',
-                      style: TextStyle(fontSize: 16.0, color: Colors.black54),
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _devices.length,
-                      itemBuilder: (context, index) {
-                        final device = _devices[index];
-                        return ListTile(
-                          title: Text(
-                            device.platformName.isNotEmpty ? device.platformName : 'Dispositivo sem nome',
-                          ),
-                          subtitle: Text(device.remoteId.toString()),
-                          trailing: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(dialogContext).pop(); // Fecha a lista
-                              _connectToDevice(device); // Conecta ao dispositivo
-                            },
-                            child: const Text('Conectar'),
-                          ),
-                        );
-                      },
-                    ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
+              IconButton(
+                icon: const Icon(Icons.close),
                 onPressed: () {
-                  Navigator.of(dialogContext).pop(); // Fecha a lista
+                  Navigator.of(dialogContext).pop(); // Fecha a modal
                 },
-                child: const Text('Fechar'),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 16.0),
+          // Lista de dispositivos
+          _devices.isEmpty
+              ? const Text(
+                  'Nenhum dispositivo encontrado.',
+                  style: TextStyle(fontSize: 16.0, color: Colors.black54),
+                )
+              : Expanded(
+                  child: ListView.builder(
+                    itemCount: _devices.length,
+                    itemBuilder: (context, index) {
+                      final device = _devices[index];
+                      return ListTile(
+                        title: Text(
+                          device.platformName.isNotEmpty
+                              ? device.platformName
+                              : 'Dispositivo sem nome',
+                        ),
+                        subtitle: Text(device.remoteId.toString()),
+                        trailing: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop(); // Fecha a lista
+                            _connectToDevice(device); // Conecta ao dispositivo
+                          },
+                          child: const Text('Conectar'),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+          const SizedBox(height: 16.0),
+          // Botão de fechar
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop(); // Fecha a modal
+            },
+            child: const Text('Fechar'),
+          ),
+        ],
       ),
-    );
+    ),
+  ),
+);
   } catch (e) {
     if (!mounted) return; // Verifica se o widget ainda está montado
     Navigator.of(context).pop(); // Fecha o indicador de carregamento
