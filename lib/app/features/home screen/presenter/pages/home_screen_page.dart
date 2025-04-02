@@ -7,7 +7,7 @@ import 'package:frotalog_gestor_v2/app/shared/routes/home_routes.dart';
 import '../../../../shared/components/frota_card.dart';
 import '../../../../shared/mocks/vehicle_service.dart';
 import '../../../detail screen/presenter/bloc/details_screen_controller.dart';
-import '../../../detail screen/presenter/bloc/details_screen_state.dart';
+
 import '../../../detail screen/presenter/pages/details_screen_page.dart';
 
 class HomeScreenPage extends StatefulWidget {
@@ -128,7 +128,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
           final vehicle = settings.arguments as VehicleModel;
           return MaterialPageRoute(
             builder: (context) => BlocProvider(
-              create: (_) => DetailsScreenController(DetailsScreenInitialState()),
+              create: (_) => DetailsScreenController(),
               child: DetailsScreenPage(vehicle: vehicle),
             ),
           );

@@ -7,12 +7,12 @@ class DetailsScreenController extends ECubit<DetailsScreenState> {
   StreamSubscription? _scanSubscription;
   bool _isScanning = false; // Variável para controlar o estado de escaneamento
 
-  DetailsScreenController(super.initialState);
+  //construtor coloca dessa forma na controller
+  DetailsScreenController() : super(DetailsScreenInitialState());
 
   Future<void> startBluetoothPairing() async {
     if (_isScanning) {
-      emit(DetailsScreenErrorState(
-          message: 'Já está em andamento um escaneamento de dispositivos.'));
+      emit(DetailsScreenErrorState(message: 'Já está em andamento um escaneamento de dispositivos.'));
       return;
     }
 
@@ -23,8 +23,7 @@ class DetailsScreenController extends ECubit<DetailsScreenState> {
       // Verifica se o Bluetooth está ligado
       bool isOn = await FlutterBluePlus.adapterState.first == BluetoothAdapterState.on;
       if (!isOn) {
-        emit(DetailsScreenErrorState(
-            message: 'Bluetooth está desligado. Por favor, ligue o Bluetooth.'));
+        emit(DetailsScreenErrorState(message: 'Bluetooth está desligado. Por favor, ligue o Bluetooth.'));
         _isScanning = false; // Libera o estado de escaneamento
         return;
       }
@@ -36,8 +35,7 @@ class DetailsScreenController extends ECubit<DetailsScreenState> {
       // Escuta os dispositivos encontrados
       _scanSubscription = FlutterBluePlus.scanResults.listen((results) {
         for (ScanResult r in results) {
-          final deviceName =
-              r.device.platformName.isNotEmpty ? r.device.platformName : 'Dispositivo sem nome';
+          final deviceName = r.device.platformName.isNotEmpty ? r.device.platformName : 'Dispositivo sem nome';
           print('Dispositivo encontrado: $deviceName (${r.device.remoteId})');
         }
       });
@@ -46,8 +44,7 @@ class DetailsScreenController extends ECubit<DetailsScreenState> {
       await Future.delayed(const Duration(seconds: 5));
       FlutterBluePlus.stopScan(); // Corrigido: chamado como método estático
 
-      emit(DetailsScreenSuccessState(
-          message: 'Pareamento concluído com sucesso! Dispositivos encontrados.'));
+      emit(DetailsScreenSuccessState(message: 'Pareamento concluído com sucesso! Dispositivos encontrados.'));
     } catch (e) {
       emit(DetailsScreenErrorState(message: 'Erro ao parear: $e'));
     } finally {
