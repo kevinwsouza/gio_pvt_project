@@ -61,7 +61,7 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
         index: _currentIndex,
         children: [
           // Aba "Frota" com navegação interna
-          _currentIndex == 0 ? DetailsScreenPage(vehicle: _allItems.first) : _buildFleetScreen(),
+          _currentIndex == 0 ? DetailsScreenPage(vehicle: VehicleModel.initial()) : _buildFleetScreen(),
           _buildMapScreen(), // Aba "Mapa"
           _buildRemoteScreen(), // Aba "Remoto"
         ],

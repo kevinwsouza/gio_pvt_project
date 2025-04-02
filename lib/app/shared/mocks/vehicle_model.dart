@@ -16,4 +16,14 @@ class VehicleModel {
     required this.horimeter,
     required this.rpm,
   });
+
+  factory VehicleModel.initial() => VehicleModel(
+        title: '',
+        status: '',
+        address: '',
+        lastCommunication: '',
+        odometer: 1,
+        horimeter: 1,
+        rpm: 1,
+      );
 }
