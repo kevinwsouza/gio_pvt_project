@@ -178,7 +178,7 @@ class _DetailsScreenPageState extends State<DetailsScreenPage> {
     ),
   ),
 );
-  } catch (e) {
+    } catch (e) {
     if (!mounted) return; // Verifica se o widget ainda está montado
     Navigator.of(context).pop(); // Fecha o indicador de carregamento
     ScaffoldMessenger.of(context).showSnackBar(
