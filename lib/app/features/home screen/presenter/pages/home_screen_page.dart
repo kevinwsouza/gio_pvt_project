@@ -8,6 +8,7 @@ import '../../../../shared/mocks/vehicle_service.dart';
 import '../../../detail screen/presenter/bloc/details_screen_controller.dart';
 import '../../../detail screen/presenter/bloc/details_screen_state.dart';
 import '../../../detail screen/presenter/pages/details_screen_page.dart';
+import '../../../maps/presenter/fleet_maps_screen.dart';
 
 class HomeScreenPage extends StatefulWidget {
   const HomeScreenPage({super.key});
@@ -220,13 +221,11 @@ class _HomeScreenPageState extends State<HomeScreenPage> {
 
   Widget _buildMapScreen() {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mapa'),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        showBackButton: false,
+        showLogoutButton: true,
       ),
-      body: const Center(
-        child: Text('Conteúdo da aba Mapa'),
-      ),
+      body: const FleetMapsScreen(), // Tela de mapa da frota
     );
   }
 
