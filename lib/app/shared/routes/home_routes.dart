@@ -15,7 +15,7 @@ import '../mocks/vehicle_model.dart';
 class HomeRoutes {
   static const String login = '/login';
   static const String home = '/home';
-  static const String details = '/card-details';
+  static const String details = '/details';
 
   static HomeRoutes? _instance;
 

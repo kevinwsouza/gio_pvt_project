@@ -15,6 +15,8 @@ class DetailsScreenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DetailsScreenController, DetailsScreenState>(builder: (context, state) {
+      final controller = context.read<DetailsScreenController>();
+
       return Scaffold(
         appBar: const CustomAppBar(
           showBackButton: true, // Mostra o botão de voltar
@@ -84,18 +86,10 @@ class DetailsScreenPage extends StatelessWidget {
                 children: [
                   OutlinedButton(
                     onPressed: () {
-                      // Exibe a modal de configurações
                       showDialog(
                         context: context,
-                        barrierDismissible: false, // Desabilita cliques fora da modal
-                        builder: (dialogContext) => BlocProvider.value(
-                          value: context.read<DetailsScreenController>(),
-                          child: FrotaConfigCard(
-                            onPressed: () {
-                              // Chama o pareamento Bluetooth
-                              dialogContext.read<DetailsScreenController>().startBluetoothPairing();
-                            },
-                          ),
+                        builder: (context) => FrotaConfigCard(
+                          onPressed: () => controller.startBluetoothPairing(),
                         ),
                       );
                     },
