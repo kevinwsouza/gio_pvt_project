@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-class OpenCallDialog extends StatelessWidget {
-  const OpenCallDialog({super.key});
+class FrotaCallCard extends StatelessWidget {
+  final VoidCallback onSend; // Callback para o botão "Enviar"
+
+  const FrotaCallCard({super.key, required this.onSend});
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +78,7 @@ class OpenCallDialog extends StatelessWidget {
             // Botão de enviar
             ElevatedButton(
               onPressed: () {
-                // Lógica para enviar o formulário
-                Navigator.of(context).pop(); // Fecha a modal após enviar
+                onSend(); // Executa a lógica passada como callback
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
