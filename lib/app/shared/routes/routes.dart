@@ -15,41 +15,36 @@ import '../mocks/vehicle_model.dart';
 final routes = GoRouter(routes: [
   GoRoute(
     path: '/',
-    pageBuilder: (context, state) => 
-      MaterialPage(
-        child: const SplashScreen(),
-      ),
+    pageBuilder: (context, state) => MaterialPage(
+      child: const SplashScreen(),
+    ),
   ),
   GoRoute(
     path: '/login',
-    pageBuilder: (context, state) => 
-      MaterialPage(
-        child: BlocProvider(
-          create: (_) => LoginController(), 
-          child: const LoginPage(),
-        ),
-      ),
-  ),
-  GoRoute(
-    path: '/home',
-    pageBuilder: (context, state) =>
-      MaterialPage(
-        child: BlocProvider(
-          create: (_) => HomeScreenController(),
-          child: const HomeScreenPage(),
-          )
-      )
-  ),
-  GoRoute(
-  path: '/details',
-  pageBuilder: (context, state) {
-    final vehicle = state.extra as Vehicle;
-    return MaterialPage(
+    pageBuilder: (context, state) => MaterialPage(
       child: BlocProvider(
-        create: (_) => DetailsScreenController(DetailsScreenInitialState()),
-        child: DetailsScreenPage(vehicle: vehicle),
+        create: (_) => LoginController(),
+        child: const LoginPage(),
       ),
-    );
-  },
-),
+    ),
+  ),
+  GoRoute(
+      path: '/home',
+      pageBuilder: (context, state) => MaterialPage(
+              child: BlocProvider(
+            create: (_) => HomeScreenController(),
+            child: const HomeScreenPage(),
+          ))),
+  GoRoute(
+    path: '/details',
+    pageBuilder: (context, state) {
+      final vehicle = state.extra as VehicleModel;
+      return MaterialPage(
+        child: BlocProvider(
+          create: (_) => DetailsScreenController(),
+          child: DetailsScreenPage(vehicle: vehicle),
+        ),
+      );
+    },
+  ),
 ]);
