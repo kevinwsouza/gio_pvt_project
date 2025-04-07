@@ -6,7 +6,6 @@ import 'package:frotalog_gestor_v2/splash_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/detail screen/presenter/bloc/details_screen_controller.dart';
-import '../../features/detail screen/presenter/bloc/details_screen_state.dart';
 import '../../features/detail screen/presenter/pages/details_screen_page.dart';
 import '../../features/home screen/presenter/bloc/home_screen_controller.dart';
 import '../../features/home screen/presenter/pages/home_screen_page.dart';

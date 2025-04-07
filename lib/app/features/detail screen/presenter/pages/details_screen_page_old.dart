@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:frotalog_gestor_v2/app/shared/log_utils.dart';
 
 import '../../../../shared/components/custom_app_bar.dart';
 import '../../../../shared/components/frota_call_card.dart';
