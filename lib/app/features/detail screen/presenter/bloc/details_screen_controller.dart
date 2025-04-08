@@ -17,6 +17,7 @@ class DetailsScreenController extends ECubit<DetailsScreenState> {
   Future<bool> startBluetoothPairing() async {
     emit(DetailsScreenLoading());
     infoLog('Iniciando pareamento Bluetooth...');
+
     if (_isScanning) {
       emit(DetailsScreenLoading(message: 'Já está em andamento um escaneamento de dispositivos.'));
       return true;
@@ -52,6 +53,9 @@ class DetailsScreenController extends ECubit<DetailsScreenState> {
         for (ScanResult r in results) {
           final deviceName = r.device.platformName.isNotEmpty ? r.device.platformName : 'Dispositivo sem nome';
           print('Dispositivo encontrado: $deviceName (${r.device.remoteId})');
+          if(!_devices.contains(r.device)){
+            _devices.add(r.device);
+          }
         }
       });
 
@@ -69,6 +73,16 @@ class DetailsScreenController extends ECubit<DetailsScreenState> {
       _scanSubscription?.cancel(); // Cancela o listener
       _isScanning = false;
       // Libera o estado de escaneamento
+    }
+  }
+
+  Future<void> connectToDevice(BluetoothDevice device) async {
+    try {
+      infoLog('Conectando ao dispositivo: ${device.platformName}');
+      await device.connect(); // Realiza a conexão com o dispositivo
+      emit(DetailsScreenSuccessState(message: 'Conectado ao dispositivo: ${device.platformName}'));
+    } catch (e) {
+      emit(DetailsScreenErrorState(message: 'Erro ao conectar: $e'));
     }
   }
 

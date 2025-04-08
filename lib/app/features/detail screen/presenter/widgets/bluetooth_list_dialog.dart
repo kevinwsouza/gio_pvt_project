@@ -5,10 +5,12 @@ import 'package:go_router/go_router.dart';
 
 class BluetoothListDialog extends StatefulWidget {
   final List<BluetoothDevice> devices;
+  final Function(BluetoothDevice) onConnect;
 
   const BluetoothListDialog({
     super.key,
     required this.devices,
+    required this.onConnect,
   });
 
   @override
@@ -71,8 +73,7 @@ class _BluetoothListDialogState extends State<BluetoothListDialog> {
                           subtitle: Text(device.remoteId.toString()),
                           trailing: ElevatedButton(
                             onPressed: () async {
-                              await _connectToDevice(device, context);
-                              context.pop();
+                              widget.onConnect(device);
                             },
                             child: const Text('Conectar'),
                           ),
@@ -92,19 +93,5 @@ class _BluetoothListDialogState extends State<BluetoothListDialog> {
         ),
       ),
     );
-  }
-
-  Future<void> _connectToDevice(BluetoothDevice device, BuildContext context) async {
-    try {
-      infoLog('Conectando ao dispositivo: ${device.platformName}');
-      await device.connect();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Conectado ao dispositivo: ${device.platformName}')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao conectar: $e')),
-      );
-    }
   }
 }

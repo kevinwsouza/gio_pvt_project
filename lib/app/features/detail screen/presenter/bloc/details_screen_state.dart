@@ -1,3 +1,5 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 sealed class DetailsScreenState {}
 
 final class DetailsScreenInitialState extends DetailsScreenState {}
@@ -14,5 +16,7 @@ final class DetailsScreenErrorState extends DetailsScreenState {
 
 final class DetailsScreenSuccessState extends DetailsScreenState {
   final String message;
-  DetailsScreenSuccessState({required this.message});
+  final List<BluetoothDevice>? devices; // Lista de dispositivos encontrados (opcional)
+
+  DetailsScreenSuccessState({required this.message, this.devices});
 }
