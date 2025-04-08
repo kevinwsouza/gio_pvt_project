@@ -46,6 +46,9 @@ class _DetailsScreenPageState extends State<DetailsScreenPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Conectado ao dispositivo: ${device.platformName}')),
     );
+
+    // Adicione aqui qualquer lógica adicional após a conexão
+    print('Conexão bem-sucedida com o dispositivo: ${device.platformName}');
   } catch (e) {
     // Fecha o indicador de carregamento em caso de erro
     if (mounted) Navigator.of(context).pop();

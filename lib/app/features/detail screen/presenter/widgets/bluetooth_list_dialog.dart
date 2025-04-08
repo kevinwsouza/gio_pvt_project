@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:frotalog_gestor_v2/app/shared/log_utils.dart';
-import 'package:go_router/go_router.dart';
 
 class BluetoothListDialog extends StatefulWidget {
   final List<BluetoothDevice> devices;

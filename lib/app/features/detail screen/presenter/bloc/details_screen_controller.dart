@@ -3,7 +3,6 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:frotalog_gestor_v2/app/features/detail%20screen/presenter/bloc/details_screen_state.dart';
 import 'package:frotalog_gestor_v2/app/shared/globals/permission_menager_bluetooth.dart';
 import 'package:frotalog_gestor_v2/app/shared/log_utils.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../../../utils/ecubit.dart'; // Import necessário para StreamSubscription
 
 class DetailsScreenController extends ECubit<DetailsScreenState> {
@@ -52,7 +51,14 @@ class DetailsScreenController extends ECubit<DetailsScreenState> {
       for (ScanResult r in results) {
         final deviceName = r.device.platformName.isNotEmpty ? r.device.platformName : 'Dispositivo sem nome';
         print('Dispositivo encontrado: $deviceName (${r.device.remoteId})');
-        if (!_devices.contains(r.device)) {
+
+        // Filtra todos os dispositivos encontrados
+        /*if (!_devices.contains(r.device)) {
+          _devices.add(r.device);
+        }*/
+
+        // Filtra apenas dispositivos que contenham "VIRTEC" no platformName
+        if (deviceName.contains('VIRTEC') && !_devices.contains(r.device)) {
           _devices.add(r.device);
         }
       }
