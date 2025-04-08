@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:frotalog_gestor_v2/app/features/detail%20screen/presenter/bloc/details_screen_controller.dart';
 import 'package:frotalog_gestor_v2/app/features/detail%20screen/presenter/bloc/details_screen_state.dart';
+import 'package:frotalog_gestor_v2/app/shared/components/custom_loading.dart';
 import '../../../../shared/components/custom_app_bar.dart';
 import '../../../../shared/components/frota_call_card.dart';
 import '../../../../shared/components/frota_config_card.dart';
@@ -198,95 +199,82 @@ class _DetailsScreenPageState extends State<DetailsScreenPage> {
   }*/
 
   Future<void> _connectToDevice(BluetoothDevice device) async {
-  try {
-    // Exibe um indicador de carregamento enquanto conecta
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+    try {
+      // Exibe um indicador de carregamento enquanto conecta
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
 
-    print('Conectando ao dispositivo: ${device.platformName}');
-    await device.connect();
+      print('Conectando ao dispositivo: ${device.platformName}');
+      await device.connect();
 
-    // Fecha o indicador de carregamento
-    if (mounted) Navigator.of(context).pop();
+      // Fecha o indicador de carregamento
+      if (mounted) Navigator.of(context).pop();
 
-    // Exibe uma mensagem de sucesso
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Conectado ao dispositivo: ${device.platformName}')),
-    );
-  } catch (e) {
-    // Fecha o indicador de carregamento em caso de erro
-    if (mounted) Navigator.of(context).pop();
+      // Exibe uma mensagem de sucesso
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Conectado ao dispositivo: ${device.platformName}')),
+      );
+    } catch (e) {
+      // Fecha o indicador de carregamento em caso de erro
+      if (mounted) Navigator.of(context).pop();
 
-    // Exibe uma mensagem de erro
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Erro ao conectar: $e')),
-    );
+      // Exibe uma mensagem de erro
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao conectar: $e')),
+      );
+    }
   }
-}
 
   @override
   void initState() {
     super.initState();
-    _controller = DetailsScreenController();
-  }
-
-  @override
-  void dispose() {
-    _controller.close(); // Cancela o listener ao destruir o widget
-    super.dispose();
-  }
-
-  void _startBluetoothPairing(BuildContext context) {
-    print('Método _startBluetoothPairing chamado.');
-    _controller.startBluetoothPairing(); // Inicia o pareamento Bluetooth
+    _controller = context.read<DetailsScreenController>();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DetailsScreenController, DetailsScreenState>(
-  bloc: _controller,
-  builder: (context, state) {
-    // MARK: - STATES
-    if (state is DetailsScreenLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    return BlocBuilder<DetailsScreenController, DetailsScreenState>(builder: (context, state) {
+      // MARK: - STATES
+      if (state is DetailsScreenLoading) {
+        return CustomLoadingWidget();
+      }
 
-    if (state is DetailsScreenErrorState) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.message)),
-        );
-      });
-    }
+      if (state is DetailsScreenErrorState) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message ?? '')),
+          );
+        });
+      }
 
-    if (state is DetailsScreenSuccessState) {
-  if (state.devices != null && state.devices!.isNotEmpty) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-        context: context,
-        barrierDismissible: true, // Permite fechar a modal manualmente
-        builder: (dialogContext) => BluetoothListDialog(
-          devices: state.devices!,
-          onConnect: (device) {
-            Navigator.of(dialogContext).pop(); // Fecha a lista antes de conectar
-            _connectToDevice(device); // Chama o método de conexão
-          },
-        ),
-      );
-    });
-  } else {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nenhum dispositivo encontrado.')),
-      );
-    });
-  }
-}
+      // if (state is DetailsScreenSuccessState) {
+      //   if (state.devices != null && state.devices!.isNotEmpty) {
+      //     WidgetsBinding.instance.addPostFrameCallback((_) {
+      //       showDialog(
+      //         context: context,
+      //         barrierDismissible: true, // Permite fechar a modal manualmente
+      //         builder: (dialogContext) => BluetoothListDialog(
+      //           devices: state.devices!,
+      //           onConnect: (device) {
+      //             Navigator.of(dialogContext).pop(); // Fecha a lista antes de conectar
+      //             _connectToDevice(device); // Chama o método de conexão
+      //           },
+      //         ),
+      //       );
+      //     });
+      //   } else {
+      //     WidgetsBinding.instance.addPostFrameCallback((_) {
+      //       ScaffoldMessenger.of(context).showSnackBar(
+      //         const SnackBar(content: Text('Nenhum dispositivo encontrado.')),
+      //       );
+      //     });
+      //   }
+      // }
 // MARK: - INICIO VIEW
       return Scaffold(
         appBar: const CustomAppBar(
@@ -362,9 +350,10 @@ class _DetailsScreenPageState extends State<DetailsScreenPage> {
                         context: context,
                         barrierDismissible: false, // Desabilita cliques fora da modal
                         builder: (dialogContext) => FrotaConfigCard(
-                          onPressed: () {
+                          isLoading: false,
+                          onPressed: () async {
                             // Chama a lógica de pareamento Bluetooth ao clicar no botão dentro do FrotaConfigCard
-                            _startBluetoothPairing(context);
+                            await _controller.startBluetoothPairing();
                           },
                         ),
                       );
